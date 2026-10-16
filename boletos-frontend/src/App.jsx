@@ -54,6 +54,20 @@ const events = [
     badge: 'FECHA ESPECIAL',
     accent: 'yellow',
   },
+  {
+    id: 5,
+    title: 'Tour de Tombo',
+    artist: 'Tombo en vivo en Ciudad de México',
+    category: 'Experiencias',
+    date: 'Vie, 16 OCT · 21:00',
+    venue: 'Estadio',
+    city: 'CDMX',
+    price: 1000,
+    capacity: 10000,
+    image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1100&q=85',
+    badge: 'HOY · CDMX',
+    accent: 'coral',
+  },
 ]
 
 const categories = ['Todo', 'Música', 'Comedia', 'Experiencias', 'Cultura']
@@ -120,6 +134,12 @@ function App() {
   useEffect(() => localStorage.setItem('aforo-purchases', JSON.stringify(receipts)), [receipts])
 
   const currentUser = users.find((user) => user.email === session?.email)
+  const selectedEventRemaining = selectedEvent?.capacity === undefined
+    ? Infinity
+    : Math.max(0, selectedEvent.capacity - receipts.reduce((total, receipt) => (
+      receipt.eventId === selectedEvent.id ? total + receipt.quantity : total
+    ), 0))
+  const maxPurchaseQuantity = Math.min(8, selectedEventRemaining)
   const visibleEvents = events.filter((event) => {
     const matchesCategory = category === 'Todo' || event.category === category
     const matchesSearch = `${event.title} ${event.artist} ${event.venue} ${event.city}`.toLowerCase().includes(search.toLowerCase())
@@ -128,7 +148,10 @@ function App() {
 
   function openEvent(event) {
     setSelectedEvent(event)
-    setQuantity(1)
+    const soldTickets = receipts.reduce((total, receipt) => (
+      receipt.eventId === event.id ? total + receipt.quantity : total
+    ), 0)
+    setQuantity(event.capacity !== undefined && soldTickets >= event.capacity ? 0 : 1)
   }
 
   function finishPurchase(user) {
@@ -264,8 +287,8 @@ function App() {
           <div className="event-modal-content"><div className="eyebrow section-eyebrow">{selectedEvent.category} · {selectedEvent.city}</div><h2 id="event-modal-title">{selectedEvent.title}</h2><p className="modal-event-description">{selectedEvent.artist}. Ven a disfrutar una experiencia para recordar.</p>
             <div className="detail-row"><Icon name="calendar" /><div><strong>Fecha y hora</strong><span>{selectedEvent.date}</span></div></div>
             <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{selectedEvent.venue}, {selectedEvent.city}</span></div></div>
-            <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span><div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto"><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(8, value + 1))} aria-label="Agregar un boleto"><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
-            <button className="primary-button modal-buy-button" onClick={confirmPurchase}>Confirmar compra <Icon name="arrow" size={17} /></button><p className="secure-note"><Icon name="lock" size={13} /> Compra de demostración · No se realiza ningún cobro</p>
+            <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span>{selectedEvent.capacity !== undefined && <span className="ticket-availability">{selectedEventRemaining.toLocaleString('es-MX')} disponibles</span>}<div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto" disabled={quantity <= 1}><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(maxPurchaseQuantity, value + 1))} aria-label="Agregar un boleto" disabled={quantity >= maxPurchaseQuantity}><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
+            <button className="primary-button modal-buy-button" onClick={confirmPurchase} disabled={selectedEventRemaining < 1}>Confirmar compra <Icon name="arrow" size={17} /></button><p className="secure-note"><Icon name="lock" size={13} /> Demo sin cobro · Disponibilidad guardada en este dispositivo</p>
           </div>
         </section>
       </div>}

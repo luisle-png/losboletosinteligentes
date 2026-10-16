@@ -109,13 +109,18 @@
 .detail-row span { color: #77766d; font-size: 10px; }
 .purchase-row { margin-top: 10px; padding: 15px 0; display: flex; align-items: flex-end; justify-content: space-between; border-top: 1px solid #e8e6dd; }
 .field-label { display: block; margin-bottom: 9px; color: #88867b; font-size: 8px; font-weight: 700; letter-spacing: .8px; }
+.ticket-availability { display: block; margin: -4px 0 8px; color: #77766d; font-size: 9px; }
 .quantity-control { height: 34px; display: inline-flex; align-items: center; border: 1px solid #d9d6cb; }
 .quantity-control button { width: 34px; height: 32px; display: grid; place-items: center; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
 .quantity-control button:hover { background: #e9e6dc; }
+.quantity-control button:disabled { color: #aaa79c; cursor: not-allowed; }
+.quantity-control button:disabled:hover { background: transparent; }
 .quantity-control > span { width: 24px; color: var(--ink); text-align: center; font-size: 11px; }
 .purchase-total { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; color: #77766d; font-size: 9px; }
 .purchase-total strong { color: var(--ink); font-family: var(--display); font-size: 23px; }
 .modal-buy-button { width: 100%; justify-content: space-between; }
+.modal-buy-button:disabled { background: #aaa79c; cursor: not-allowed; }
+.modal-buy-button:disabled:hover { transform: none; }
 .secure-note { margin: 11px 0 0; display: flex; justify-content: center; align-items: center; gap: 5px; color: #88867b; font-size: 8px; }
 .auth-modal, .account-modal, .receipt-modal { padding: 36px 36px 30px; }
 .auth-mark { margin-bottom: 20px; color: var(--ink); font-family: var(--display); font-size: 34px; font-weight: 700; }
