@@ -54,9 +54,61 @@ const events = [
     badge: 'FECHA ESPECIAL',
     accent: 'yellow',
   },
+  {
+    id: 5,
+    title: 'Ruta a Alaska',
+    artist: 'Auroras, paisajes extremos y una experiencia que cambia la mirada',
+    category: 'Viajes',
+    date: 'Vie, 20 SEP · 06:30',
+    venue: 'Aeropuerto Internacional',
+    city: 'Anchorage, Alaska',
+    price: 12490,
+    image: 'https://images.unsplash.com/photo-1517821362940-8572ef2a5b38?auto=format&fit=crop&w=1200&q=85',
+    badge: 'DESTINO TOP',
+    accent: 'purple',
+  },
+  {
+    id: 6,
+    title: 'Tokio Lights',
+    artist: 'Miyu Sato · estilo, cultura y energía de Japón en una sola experiencia',
+    category: 'Viajes',
+    date: 'Mar, 24 SEP · 09:00',
+    venue: 'Shibuya District',
+    city: 'Tokio, Japón',
+    price: 15850,
+    image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=85',
+    badge: 'JAPÓN',
+    accent: 'blue',
+  },
+  {
+    id: 7,
+    title: 'Nueva York Skyline',
+    artist: 'Ariana Brooks · la energía más grande de Estados Unidos',
+    category: 'Viajes',
+    date: 'Vie, 27 SEP · 08:15',
+    venue: 'Times Square',
+    city: 'Nueva York, EE. UU.',
+    price: 13200,
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=85',
+    badge: 'USA',
+    accent: 'coral',
+  },
+  {
+    id: 8,
+    title: 'Shanghai Nights',
+    artist: 'Lin Wei · innovación, arte y modernidad de China',
+    category: 'Viajes',
+    date: 'Sáb, 05 OCT · 19:30',
+    venue: 'Bund Waterfront',
+    city: 'Shanghái, China',
+    price: 14600,
+    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=85',
+    badge: 'CHINA',
+    accent: 'green',
+  },
 ]
 
-const categories = ['Todo', 'Música', 'Comedia', 'Experiencias', 'Cultura']
+const categories = ['Todo', 'Música', 'Comedia', 'Experiencias', 'Cultura', 'Viajes']
 const formatPrice = (price) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(price)
 
 function readStorage(key, fallback) {
@@ -215,7 +267,7 @@ function App() {
             <div className="hero-caption"><span className="caption-line" /> Horizonte Festival <span>24 AGO · MTY</span></div>
             <div className="hero-spark">✳</div>
           </div>
-          <div className="hero-index"><span>01</span> / 04</div>
+          <div className="hero-index"><span>01</span> / 08</div>
         </section>
 
         <section className="event-section" id="eventos">
