@@ -54,6 +54,45 @@ const events = [
     badge: 'FECHA ESPECIAL',
     accent: 'yellow',
   },
+  {
+    id: 5,
+    title: 'BTS · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y sede por confirmar.',
+    category: 'Música',
+    date: 'Fecha por confirmar',
+    venue: 'Sede por confirmar',
+    city: '',
+    price: 2500,
+    image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1100&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'coral',
+  },
+  {
+    id: 6,
+    title: 'NewJeans · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y sede por confirmar.',
+    category: 'Música',
+    date: 'Fecha por confirmar',
+    venue: 'Sede por confirmar',
+    city: '',
+    price: 1800,
+    image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1100&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'blue',
+  },
+  {
+    id: 7,
+    title: 'Stray Kids · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y sede por confirmar.',
+    category: 'Música',
+    date: 'Fecha por confirmar',
+    venue: 'Sede por confirmar',
+    city: '',
+    price: 2200,
+    image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1100&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'green',
+  },
 ]
 
 const categories = ['Todo', 'Música', 'Comedia', 'Experiencias', 'Cultura']
@@ -261,9 +300,9 @@ function App() {
         <section className="event-modal" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">
           <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="Cerrar"><Icon name="close" /></button>
           <img className="modal-event-image" src={selectedEvent.image} alt="" />
-          <div className="event-modal-content"><div className="eyebrow section-eyebrow">{selectedEvent.category} · {selectedEvent.city}</div><h2 id="event-modal-title">{selectedEvent.title}</h2><p className="modal-event-description">{selectedEvent.artist}. Ven a disfrutar una experiencia para recordar.</p>
+          <div className="event-modal-content"><div className="eyebrow section-eyebrow">{selectedEvent.category}{selectedEvent.city && ` · ${selectedEvent.city}`}</div><h2 id="event-modal-title">{selectedEvent.title}</h2><p className="modal-event-description">{selectedEvent.artist}</p>
             <div className="detail-row"><Icon name="calendar" /><div><strong>Fecha y hora</strong><span>{selectedEvent.date}</span></div></div>
-            <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{selectedEvent.venue}, {selectedEvent.city}</span></div></div>
+            <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{[selectedEvent.venue, selectedEvent.city].filter(Boolean).join(', ')}</span></div></div>
             <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span><div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto"><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(8, value + 1))} aria-label="Agregar un boleto"><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
             <button className="primary-button modal-buy-button" onClick={confirmPurchase}>Confirmar compra <Icon name="arrow" size={17} /></button><p className="secure-note"><Icon name="lock" size={13} /> Compra de demostración · No se realiza ningún cobro</p>
           </div>
