@@ -3,17 +3,17 @@ import './App.css'
 
 const events = [
   {
-    id: 1,
-    title: 'Horizonte Festival',
-    artist: 'Una noche para perder la noción del tiempo',
-    category: 'Música',
-    date: 'Sáb, 24 AGO · 18:00',
-    venue: 'Parque Fundidora',
-    city: 'Monterrey, NL',
-    price: 890,
-    image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=1500&q=85',
-    badge: 'ÚLTIMOS BOLETOS',
-    accent: 'coral',
+    id: 9,
+    title: 'Camp Nou · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y precio por confirmar.',
+    category: 'Experiencias',
+    date: 'Fecha por confirmar',
+    venue: 'Spotify Camp Nou',
+    city: 'Barcelona, España',
+    price: 2500,
+    image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1500&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'blue',
   },
   {
     id: 2,
