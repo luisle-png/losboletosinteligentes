@@ -68,6 +68,45 @@ const events = [
     badge: 'HOY · CDMX',
     accent: 'coral',
   },
+  {
+    id: 6,
+    title: 'BTS · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y sede por confirmar.',
+    category: 'Música',
+    date: 'Fecha por confirmar',
+    venue: 'Sede por confirmar',
+    city: '',
+    price: 2500,
+    image: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1100&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'coral',
+  },
+  {
+    id: 7,
+    title: 'NewJeans · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y sede por confirmar.',
+    category: 'Música',
+    date: 'Fecha por confirmar',
+    venue: 'Sede por confirmar',
+    city: '',
+    price: 1800,
+    image: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1100&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'blue',
+  },
+  {
+    id: 8,
+    title: 'Stray Kids · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y sede por confirmar.',
+    category: 'Música',
+    date: 'Fecha por confirmar',
+    venue: 'Sede por confirmar',
+    city: '',
+    price: 2200,
+    image: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1100&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'green',
+  },
 ]
 
 const categories = ['Todo', 'Música', 'Comedia', 'Experiencias', 'Cultura']
@@ -213,9 +252,9 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="announcement"><span className="announcement-dot" /> LO QUE SE VIVE, SE CUENTA <span className="announcement-note">Boletos seguros · Planes que sí suceden</span></div>
+      <div className="announcement"><span className="announcement-dot" /> CON NUESTRA AGENCIA TODO ES MEJOR <span className="announcement-note">Viajes y experiencias para recordar</span></div>
       <header className="topbar">
-        <a className="brand" href="#inicio" aria-label="Aforo, inicio"><span className="brand-mark">a<span>.</span></span><span>aforo</span></a>
+        <a className="brand" href="#inicio" aria-label="Susu viaja conmigo, inicio"><span className="brand-mark" aria-hidden="true">✦</span><span className="brand-name"><strong>SUSU</strong><small>VIAJA CONMIGO</small></span></a>
         <nav className="main-nav" aria-label="Navegación principal"><a href="#eventos" className="nav-active">Descubrir</a><a href="#eventos">Categorías</a><a href="#como-funciona">Cómo funciona</a></nav>
         <div className="header-actions">
           {currentUser ? <button className="account-button" onClick={() => setAccountOpen(true)}><span className="avatar">{currentUser.name.charAt(0).toUpperCase()}</span><span className="account-name">{currentUser.name.split(' ')[0]}</span></button> : <button className="login-button" onClick={() => { setAuthMode('login'); setAuthOpen(true) }}>Iniciar sesión</button>}
@@ -226,19 +265,20 @@ function App() {
       <main id="inicio">
         <section className="hero-section">
           <div className="hero-copy">
-            <div className="eyebrow"><span /> AGENDA ABIERTA · MONTERREY</div>
-            <h1>Sal de la rutina.<br /><span>Entra en la historia.</span></h1>
-            <p>Encuentra eso que llevas días queriendo hacer. Los mejores planes empiezan con un boleto.</p>
+            <div className="eyebrow"><span /> EXPERIENCIAS PARA RECORDAR</div>
+            <h1>Susu viaja<br /><span>conmigo.</span></h1>
+            <p className="hero-tagline">Con nuestra agencia todo es mejor.</p>
+            <p>Descubre conciertos, viajes y momentos especiales. Tu próxima aventura empieza aquí.</p>
             <a href="#eventos" className="primary-button">Encuentra tu próximo plan <Icon name="arrow" size={18} /></a>
             <div className="hero-proof"><div className="proof-avatars"><span>M</span><span>J</span><span>L</span></div><p><strong>2,400+</strong> personas ya tienen plan</p></div>
           </div>
           <div className="hero-art" role="img" aria-label="Público en un concierto en vivo">
             <div className="hero-photo" />
-            <div className="hero-sticker"><span>EN VIVO</span><strong>La noche<br />es tuya.</strong><i>↗</i></div>
-            <div className="hero-caption"><span className="caption-line" /> Horizonte Festival <span>24 AGO · MTY</span></div>
-            <div className="hero-spark">✳</div>
+            <div className="hero-sticker"><span>VAMOS</span><strong>Tu próxima<br />aventura.</strong><i>↗</i></div>
+            <div className="hero-caption"><span className="caption-line" /> Momentos que se quedan contigo</div>
+            <div className="hero-spark" aria-hidden="true">✦</div>
           </div>
-          <div className="hero-index"><span>01</span> / 04</div>
+          <div className="hero-index"><span>01</span> / 07</div>
         </section>
 
         <section className="event-section" id="eventos">
@@ -278,17 +318,16 @@ function App() {
         </section>
       </main>
 
-      <footer className="site-footer"><a className="brand footer-brand" href="#inicio"><span className="brand-mark">a<span>.</span></span><span>aforo</span></a><p>Hecho para que sí salgas.</p><span>© 2025 Aforo · Monterrey, MX</span></footer>
+      <footer className="site-footer"><a className="brand footer-brand" href="#inicio" aria-label="Susu viaja conmigo, inicio"><span className="brand-mark" aria-hidden="true">✦</span><span className="brand-name"><strong>SUSU</strong><small>VIAJA CONMIGO</small></span></a><p>Con nuestra agencia todo es mejor.</p><span>© 2026 Susu Viaja Conmigo</span></footer>
 
       {selectedEvent && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedEvent(null) }}>
         <section className="event-modal" role="dialog" aria-modal="true" aria-labelledby="event-modal-title">
           <button className="modal-close" onClick={() => setSelectedEvent(null)} aria-label="Cerrar"><Icon name="close" /></button>
           <img className="modal-event-image" src={selectedEvent.image} alt="" />
-          <div className="event-modal-content"><div className="eyebrow section-eyebrow">{selectedEvent.category} · {selectedEvent.city}</div><h2 id="event-modal-title">{selectedEvent.title}</h2><p className="modal-event-description">{selectedEvent.artist}. Ven a disfrutar una experiencia para recordar.</p>
+          <div className="event-modal-content"><div className="eyebrow section-eyebrow">{selectedEvent.category}{selectedEvent.city && ` · ${selectedEvent.city}`}</div><h2 id="event-modal-title">{selectedEvent.title}</h2><p className="modal-event-description">{selectedEvent.artist}</p>
             <div className="detail-row"><Icon name="calendar" /><div><strong>Fecha y hora</strong><span>{selectedEvent.date}</span></div></div>
-            <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{selectedEvent.venue}, {selectedEvent.city}</span></div></div>
+            <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{[selectedEvent.venue, selectedEvent.city].filter(Boolean).join(', ')}</span></div></div>
             <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span>{selectedEvent.capacity !== undefined && <span className="ticket-availability">{selectedEventRemaining.toLocaleString('es-MX')} disponibles</span>}<div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto" disabled={quantity <= 1}><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(maxPurchaseQuantity, value + 1))} aria-label="Agregar un boleto" disabled={quantity >= maxPurchaseQuantity}><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
-            <button className="primary-button modal-buy-button" onClick={confirmPurchase} disabled={selectedEventRemaining < 1}>Confirmar compra <Icon name="arrow" size={17} /></button><p className="secure-note"><Icon name="lock" size={13} /> Demo sin cobro · Disponibilidad guardada en este dispositivo</p>
           </div>
         </section>
       </div>}
@@ -296,7 +335,7 @@ function App() {
       {authOpen && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setAuthOpen(false) }}>
         <section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
           <button className="modal-close" onClick={() => setAuthOpen(false)} aria-label="Cerrar"><Icon name="close" /></button>
-          <div className="auth-mark">a<span>.</span></div><div className="eyebrow section-eyebrow">TU PRÓXIMA HISTORIA</div><h2 id="auth-title">{authMode === 'login' ? 'Qué bueno verte.' : 'Hazte un lugar.'}</h2><p className="auth-subtitle">{authMode === 'login' ? 'Entra a tu cuenta para continuar.' : 'Crea tu cuenta y empieza a hacer planes.'}</p>
+          <div className="auth-mark">✦ <span>SUSU</span></div><div className="eyebrow section-eyebrow">TU PRÓXIMA HISTORIA</div><h2 id="auth-title">{authMode === 'login' ? 'Qué bueno verte.' : 'Hazte un lugar.'}</h2><p className="auth-subtitle">{authMode === 'login' ? 'Entra a tu cuenta para continuar.' : 'Crea tu cuenta y empieza a hacer planes.'}</p>
           <form className="auth-form" onSubmit={handleAuthSubmit}>
             {authMode === 'register' && <label>Nombre completo<input name="name" type="text" placeholder="Tu nombre" autoComplete="name" required /></label>}
             <label>Correo electrónico<input name="email" type="email" placeholder="tu@correo.com" autoComplete="email" required /></label>
@@ -313,7 +352,7 @@ function App() {
       </div>}
 
       {receiptOpen && <div className="modal-backdrop receipt-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setReceiptOpen(null) }}>
-        <section className="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><button className="modal-close" onClick={() => setReceiptOpen(null)} aria-label="Cerrar"><Icon name="close" /></button><div className="receipt-check"><Icon name="check" size={26} /></div><div className="eyebrow section-eyebrow">COMPRA CONFIRMADA</div><h2 id="receipt-title">Ya tienes plan.</h2><p className="receipt-thanks">Tu compra quedó guardada en este dispositivo.</p><div className="receipt-ticket"><div className="receipt-ticket-top"><span>AFORO <span className="receipt-logo-dot">.</span></span><span>COMPROBANTE</span></div><h3>{receiptOpen.title}</h3><p>{receiptOpen.date}</p><p>{receiptOpen.venue}</p><div className="receipt-divider" /><div className="receipt-data"><span>Folio<strong>{receiptOpen.id}</strong></span><span>Boletos<strong>{receiptOpen.quantity}</strong></span><span>Comprador<strong>{receiptOpen.buyer}</strong></span></div><div className="receipt-total"><span>Total pagado</span><strong>{formatPrice(receiptOpen.total)}</strong></div><p className="receipt-date">{receiptOpen.createdAt}</p></div><button className="primary-button receipt-done" onClick={() => setReceiptOpen(null)}>Listo, gracias <Icon name="check" size={17} /></button></section>
+        <section className="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><button className="modal-close" onClick={() => setReceiptOpen(null)} aria-label="Cerrar"><Icon name="close" /></button><div className="receipt-check"><Icon name="check" size={26} /></div><div className="eyebrow section-eyebrow">COMPRA CONFIRMADA</div><h2 id="receipt-title">Ya tienes plan.</h2><p className="receipt-thanks">Tu compra quedó guardada en este dispositivo.</p><div className="receipt-ticket"><div className="receipt-ticket-top"><span>SUSU <span className="receipt-logo-dot">✦</span></span><span>COMPROBANTE</span></div><h3>{receiptOpen.title}</h3><p>{receiptOpen.date}</p><p>{receiptOpen.venue}</p><div className="receipt-divider" /><div className="receipt-data"><span>Folio<strong>{receiptOpen.id}</strong></span><span>Boletos<strong>{receiptOpen.quantity}</strong></span><span>Comprador<strong>{receiptOpen.buyer}</strong></span></div><div className="receipt-total"><span>Total pagado</span><strong>{formatPrice(receiptOpen.total)}</strong></div><p className="receipt-date">{receiptOpen.createdAt}</p></div><button className="primary-button receipt-done" onClick={() => setReceiptOpen(null)}>Listo, gracias <Icon name="check" size={17} /></button></section>
       </div>}
 
       {notice && <div className="toast" role="status"><Icon name="check" size={16} />{notice}<button onClick={() => setNotice('')} aria-label="Cerrar aviso"><Icon name="close" size={15} /></button></div>}
