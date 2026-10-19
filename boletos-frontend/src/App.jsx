@@ -225,11 +225,7 @@ function App() {
   useEffect(() => localStorage.setItem('aforo-purchases', JSON.stringify(receipts)), [receipts])
 
   const currentUser = users.find((user) => user.email === session?.email)
-  const selectedEventRemaining = selectedEvent?.capacity === undefined
-    ? Infinity
-    : Math.max(0, selectedEvent.capacity - receipts.reduce((total, receipt) => (
-      receipt.eventId === selectedEvent.id ? total + receipt.quantity : total
-    ), 0))
+  const selectedEventRemaining = selectedEvent ? getEventRemaining(selectedEvent) : Infinity
   const maxPurchaseQuantity = Math.min(8, selectedEventRemaining)
   const visibleEvents = events.filter((event) => {
     const matchesCategory = category === 'Todo' || event.category === category
@@ -237,15 +233,24 @@ function App() {
     return matchesCategory && matchesSearch
   })
 
+  function getEventRemaining(event) {
+    if (event.capacity === undefined) return Infinity
+    return Math.max(0, event.capacity - receipts.reduce((total, receipt) => (
+      receipt.eventId === event.id ? total + receipt.quantity : total
+    ), 0))
+  }
+
   function openEvent(event) {
     setSelectedEvent(event)
-    const soldTickets = receipts.reduce((total, receipt) => (
-      receipt.eventId === event.id ? total + receipt.quantity : total
-    ), 0)
-    setQuantity(event.capacity !== undefined && soldTickets >= event.capacity ? 0 : 1)
+    setQuantity(getEventRemaining(event) === 0 ? 0 : 1)
   }
 
   function finishPurchase(user) {
+    if (!selectedEvent || quantity < 1 || quantity > getEventRemaining(selectedEvent)) {
+      setPendingPurchase(false)
+      setNotice('No hay suficientes boletos disponibles para completar la compra.')
+      return
+    }
     const receipt = createReceipt(selectedEvent, quantity, user)
     setReceipts((current) => [receipt, ...current])
     setSelectedEvent(null)
@@ -287,6 +292,10 @@ function App() {
   }
 
   function confirmPurchase() {
+    if (!selectedEvent || quantity < 1 || quantity > getEventRemaining(selectedEvent)) {
+      setNotice('No hay suficientes boletos disponibles para completar la compra.')
+      return
+    }
     if (!currentUser) {
       setPendingPurchase(true)
       setAuthMode('login')
@@ -346,19 +355,25 @@ function App() {
           </div>
 
           <div className="event-grid">
-            {visibleEvents.map((event) => <article className="event-card" key={event.id}>
-              <button className="event-image-button" onClick={() => openEvent(event)} aria-label={`Ver detalles de ${event.title}`}>
-                <img src={event.image} alt={event.title} loading="lazy" />
-                <span className={`event-badge ${event.accent}`}>{event.badge}</span>
-                <span className="image-arrow"><Icon name="arrow" size={18} /></span>
-              </button>
-              <div className="event-card-body">
-                <div className="event-meta"><span>{event.category}</span><span>{event.date.split(' · ')[0]}</span></div>
-                <button className="event-title-button" onClick={() => openEvent(event)}><h3>{event.title}</h3></button>
-                <p className="event-artist">{event.artist}</p>
-                <div className="event-card-footer"><span className="venue-line"><Icon name="pin" size={15} />{event.venue}</span><span className="event-price">Desde <strong>{formatPrice(event.price)}</strong></span></div>
-              </div>
-            </article>)}
+            {visibleEvents.map((event) => {
+              const eventRemaining = getEventRemaining(event)
+              return <article className="event-card" key={event.id}>
+                <button className="event-image-button" onClick={() => openEvent(event)} aria-label={`Ver detalles de ${event.title}`}>
+                  <img src={event.image} alt={event.title} loading="lazy" />
+                  <span className={`event-badge ${event.accent}`}>{event.badge}</span>
+                  <span className="image-arrow"><Icon name="arrow" size={18} /></span>
+                </button>
+                <div className="event-card-body">
+                  <div className="event-meta"><span>{event.category}</span><span>{event.date.split(' · ')[0]}</span></div>
+                  <button className="event-title-button" onClick={() => openEvent(event)}><h3>{event.title}</h3></button>
+                  <p className="event-artist">{event.artist}</p>
+                  <div className="event-card-footer"><span className="venue-line"><Icon name="pin" size={15} />{event.venue}</span><span className="event-price">Desde <strong>{formatPrice(event.price)}</strong></span></div>
+                  <button className="event-buy-button" onClick={() => openEvent(event)} disabled={eventRemaining === 0}>
+                    {eventRemaining === 0 ? 'Agotado' : 'Comprar boletos'} {eventRemaining > 0 && <Icon name="arrow" size={15} />}
+                  </button>
+                </div>
+              </article>
+            })}
           </div>
           {visibleEvents.length === 0 && <div className="empty-results">No encontramos eventos con esa búsqueda. Prueba con otra palabra.</div>}
           <div className="all-events"><button className="outline-button" onClick={() => { setCategory('Todo'); setSearch('') }}>Explorar todos los eventos <Icon name="arrow" size={16} /></button></div>
@@ -380,6 +395,10 @@ function App() {
             <div className="detail-row"><Icon name="calendar" /><div><strong>Fecha y hora</strong><span>{selectedEvent.date}</span></div></div>
             <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{[selectedEvent.venue, selectedEvent.city].filter(Boolean).join(', ')}</span></div></div>
             <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span>{selectedEvent.capacity !== undefined && <span className="ticket-availability">{selectedEventRemaining.toLocaleString('es-MX')} disponibles</span>}<div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto" disabled={quantity <= 1}><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(maxPurchaseQuantity, value + 1))} aria-label="Agregar un boleto" disabled={quantity >= maxPurchaseQuantity}><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
+            <button className="primary-button modal-buy-button" onClick={confirmPurchase} disabled={quantity < 1 || selectedEventRemaining === 0}>
+              {selectedEventRemaining === 0 ? 'Agotado' : 'Confirmar compra'} <Icon name="arrow" size={16} />
+            </button>
+            <p className="secure-note"><Icon name="lock" size={13} /> Compra de demostración, sin cobro real.</p>
           </div>
         </section>
       </div>}
