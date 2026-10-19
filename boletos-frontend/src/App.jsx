@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 const events = [
@@ -120,8 +120,52 @@ const danceSparkles = [
 ]
 
 function DancingMonkey({ variant, name, decorative = false }) {
+  const [dragPosition, setDragPosition] = useState(null)
+  const dragOffset = useRef(null)
+
+  function handlePointerDown(event) {
+    if (event.button !== 0) return
+    event.preventDefault()
+    event.stopPropagation()
+    const bounds = event.currentTarget.getBoundingClientRect()
+    dragOffset.current = { x: event.clientX - bounds.left, y: event.clientY - bounds.top }
+    setDragPosition({ left: bounds.left, top: bounds.top, placed: false })
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function handlePointerMove(event) {
+    if (!dragOffset.current) return
+    const bounds = event.currentTarget.getBoundingClientRect()
+    setDragPosition({
+      left: Math.max(0, Math.min(window.innerWidth - bounds.width, event.clientX - dragOffset.current.x)),
+      top: Math.max(0, Math.min(window.innerHeight - bounds.height, event.clientY - dragOffset.current.y)),
+      placed: false,
+    })
+  }
+
+  function handlePointerUp(event) {
+    if (dragOffset.current) {
+      const bounds = event.currentTarget.getBoundingClientRect()
+      const parentBounds = event.currentTarget.parentElement.getBoundingClientRect()
+      setDragPosition({ left: bounds.left - parentBounds.left, top: bounds.top - parentBounds.top, placed: true })
+    }
+    dragOffset.current = null
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
   return (
-    <div className={`dancing-monkey ${variant}`} role="img" aria-label={name} aria-hidden={decorative ? 'true' : undefined}>
+    <div
+      className={`dancing-monkey ${variant}${dragPosition?.placed ? ' user-placed' : dragPosition ? ' user-dragged' : ''}`}
+      style={dragPosition ? { left: dragPosition.left, top: dragPosition.top } : undefined}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onClick={(event) => { event.preventDefault(); event.stopPropagation() }}
+      role="img"
+      aria-label={name}
+      aria-hidden={decorative ? 'true' : undefined}
+    >
       <span className="monkey-tail" />
       <span className="monkey-arm monkey-arm-left" />
       <span className="monkey-arm monkey-arm-right" />

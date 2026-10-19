@@ -36,6 +36,7 @@
 .hero-proof p { color: #77766c; font-size: 10px; }
 .hero-proof strong { color: var(--ink); }
 .hero-art { height: 360px; position: relative; margin: 6px 2px 0 0; animation: arrive .8s .08s ease both; }
+.hero-art:has(.user-dragged), .hero-art:has(.user-placed) { animation: none; }
 .hero-art::before, .hero-art::after { position: absolute; z-index: 1; color: #fff4fa; font-family: var(--serif); pointer-events: none; animation: twinkle 2.8s ease-in-out infinite alternate; }
 .hero-art::before { content: '✧'; top: 30px; left: 48px; font-size: 32px; text-shadow: 0 0 18px #fff; }
 .hero-art::after { content: '✦'; right: 60px; bottom: 56px; font-size: 20px; animation-delay: .8s; text-shadow: 0 0 14px #fff; }
@@ -51,7 +52,7 @@
 .hero-spark { position: absolute; left: -24px; bottom: 38px; color: var(--coral); font-size: 39px; text-shadow: 0 0 18px #d94f8a65; animation: rotate 20s linear infinite; }
 .hero-index { position: absolute; right: 0; bottom: 40px; color: #a09e94; font-size: 9px; letter-spacing: .8px; }
 .hero-index span { color: var(--ink); }
-.page-monkey { position: absolute; z-index: 1; width: 82px; height: 140px; pointer-events: none; animation-name: mini-monkey-dance; animation-duration: .82s; }
+.page-monkey { position: absolute; z-index: 1; width: 82px; height: 140px; pointer-events: auto; animation-name: mini-monkey-dance; animation-duration: .82s; }
 .page-heart { position: absolute; z-index: 1; color: #d94f8a; font-family: var(--serif); font-size: 24px; text-shadow: 0 0 12px #fff, 0 0 16px #e788aa66; pointer-events: none; animation: sparkle-drift 2s ease-in-out infinite alternate; }
 .hero-monkey { top: 120px; right: 12px; left: auto; animation-delay: -.3s; }
 .hero-heart { top: 14%; right: 2%; animation-delay: -.5s; }.hero-star { top: 72%; left: 46%; color: #c6a33f; animation-delay: -.9s; }
@@ -62,8 +63,15 @@
 .dance-message h2 { margin: 9px 0 0; color: var(--ink); font-family: var(--serif); font-size: clamp(25px, 3vw, 36px); line-height: 1.1; font-weight: 600; }
 .dance-message em { color: var(--coral); font-weight: 500; }
 .monkey-stage { min-width: 270px; height: 170px; position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 9px; }
+.monkey-stage:has(.user-dragged), .monkey-stage:has(.user-placed) { transform: none; }
 .monkey-stage::after { position: absolute; right: 2%; bottom: 4px; left: 2%; z-index: -1; height: 13px; content: ''; border-radius: 50%; background: #d98ba72b; filter: blur(5px); }
-.dancing-monkey { --fur: #d88762; --fur-dark: #a95f4c; --face: #f8d8ba; width: 82px; height: 140px; position: relative; flex: 0 0 82px; transform-origin: 50% 100%; animation: monkey-dance .78s ease-in-out infinite alternate; }
+.dancing-monkey { --fur: #d88762; --fur-dark: #a95f4c; --face: #f8d8ba; width: 82px; height: 140px; position: relative; flex: 0 0 82px; cursor: grab; touch-action: none; user-select: none; transform-origin: 50% 100%; animation: monkey-dance .78s ease-in-out infinite alternate; }
+.dancing-monkey:active { cursor: grabbing; }
+.dancing-monkey.user-dragged { position: fixed; z-index: 9; margin: 0; }
+.dancing-monkey.user-placed { position: absolute; z-index: 9; margin: 0; }
+.dancing-monkey.user-dragged, .dancing-monkey.user-placed { animation: none; transform: none; }
+.event-card:has(.user-dragged), .event-card:has(.user-placed) { overflow: visible; transform: none; z-index: 9; }
+.event-image-button:has(.user-dragged), .event-image-button:has(.user-placed), .event-section:has(.user-dragged), .event-section:has(.user-placed), .dance-section:has(.user-dragged), .dance-section:has(.user-placed) { overflow: visible; }
 .dancing-monkey:nth-child(2) { animation-delay: -.39s; }
 .dancing-monkey:nth-child(3) { animation-delay: -.16s; }
 .monkey-peach { --fur: #e9a16f; --fur-dark: #c46e5d; --face: #ffe1c3; }
@@ -116,6 +124,7 @@
 .event-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
 .event-card { min-width: 0; overflow: hidden; border: 1px solid #f1dce6; border-radius: 13px; background: #fffafd; box-shadow: 0 8px 24px #6d34440a; animation: card-in .45s ease both; transition: transform .25s ease, box-shadow .25s ease; }
 .event-card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px #6d344418; }
+.event-card:has(.user-dragged), .event-card:has(.user-placed) { animation: none; transform: none; }
 .event-card:nth-child(2) { animation-delay: .06s; }.event-card:nth-child(3) { animation-delay: .12s; }.event-card:nth-child(4) { animation-delay: .18s; }
 .event-image-button { height: 180px; width: 100%; position: relative; display: block; padding: 0; overflow: hidden; border: 0; background: #f3dce7; cursor: pointer; text-align: left; }
 .card-monkey { top: 35px; left: 8px; animation-name: tiny-monkey-dance; animation-duration: .76s; }
