@@ -304,6 +304,7 @@ function App() {
   }
 
   function confirmPurchase() {
+    if (!selectedEvent || quantity < 1 || quantity > selectedEventRemaining) return
     if (!currentUser) {
       setPendingPurchase(true)
       setAuthMode('login')
@@ -420,6 +421,8 @@ function App() {
             <div className="detail-row"><Icon name="calendar" /><div><strong>Fecha y hora</strong><span>{selectedEvent.date}</span></div></div>
             <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{[selectedEvent.venue, selectedEvent.city].filter(Boolean).join(', ')}</span></div></div>
             <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span>{selectedEvent.capacity !== undefined && <span className="ticket-availability">{selectedEventRemaining.toLocaleString('es-MX')} disponibles</span>}<div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto" disabled={quantity <= 1}><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(maxPurchaseQuantity, value + 1))} aria-label="Agregar un boleto" disabled={quantity >= maxPurchaseQuantity}><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
+            <button className="primary-button modal-buy-button" onClick={confirmPurchase} disabled={quantity < 1 || selectedEventRemaining < 1}>{selectedEventRemaining < 1 ? 'Agotados' : 'Comprar boletos'} <Icon name="arrow" size={17} /></button>
+            <p className="secure-note"><Icon name="lock" size={13} /> Compra de demostración · No se realiza ningún cobro</p>
           </div>
         </section>
       </div>}
