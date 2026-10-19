@@ -361,6 +361,10 @@ function App() {
   }
 
   function confirmPurchase() {
+    if (!selectedEvent || quantity < 1 || quantity > getEventRemaining(selectedEvent)) {
+      setNotice('No hay suficientes boletos disponibles para completar la compra.')
+      return
+    }
     if (!currentUser) {
       setPendingPurchase(true)
       setAuthMode('login')
@@ -436,19 +440,25 @@ function App() {
           </div>
 
           <div className="event-grid">
-            {visibleEvents.map((event) => <article className="event-card" key={event.id}>
-              <button className="event-image-button" onClick={() => openEvent(event)} aria-label={`Ver detalles de ${event.title}`}>
-                <img src={event.image} alt={event.title} loading="lazy" />
-                <span className={`event-badge ${event.accent}`}>{event.badge}</span>
-                <span className="image-arrow"><Icon name="arrow" size={18} /></span>
-              </button>
-              <div className="event-card-body">
-                <div className="event-meta"><span>{event.category}</span><span>{event.date.split(' · ')[0]}</span></div>
-                <button className="event-title-button" onClick={() => openEvent(event)}><h3>{event.title}</h3></button>
-                <p className="event-artist">{event.artist}</p>
-                <div className="event-card-footer"><span className="venue-line"><Icon name="pin" size={15} />{event.venue}</span><span className="event-price">Desde <strong>{formatPrice(event.price)}</strong></span></div>
-              </div>
-            </article>)}
+            {visibleEvents.map((event) => {
+              const eventRemaining = getEventRemaining(event)
+              return <article className="event-card" key={event.id}>
+                <button className="event-image-button" onClick={() => openEvent(event)} aria-label={`Ver detalles de ${event.title}`}>
+                  <img src={event.image} alt={event.title} loading="lazy" />
+                  <span className={`event-badge ${event.accent}`}>{event.badge}</span>
+                  <span className="image-arrow"><Icon name="arrow" size={18} /></span>
+                </button>
+                <div className="event-card-body">
+                  <div className="event-meta"><span>{event.category}</span><span>{event.date.split(' · ')[0]}</span></div>
+                  <button className="event-title-button" onClick={() => openEvent(event)}><h3>{event.title}</h3></button>
+                  <p className="event-artist">{event.artist}</p>
+                  <div className="event-card-footer"><span className="venue-line"><Icon name="pin" size={15} />{event.venue}</span><span className="event-price">Desde <strong>{formatPrice(event.price)}</strong></span></div>
+                  <button className="event-buy-button" onClick={() => openEvent(event)} disabled={eventRemaining === 0}>
+                    {eventRemaining === 0 ? 'Agotado' : 'Comprar boletos'} {eventRemaining > 0 && <Icon name="arrow" size={15} />}
+                  </button>
+                </div>
+              </article>
+            })}
           </div>
           {visibleEvents.length === 0 && <div className="empty-results">No encontramos eventos con esa búsqueda. Prueba con otra palabra.</div>}
           <div className="all-events"><button className="outline-button" onClick={() => { setCategory('Todo'); setSearch('') }}>Explorar todos los eventos <Icon name="arrow" size={16} /></button></div>
@@ -474,6 +484,10 @@ function App() {
             <div className="detail-row"><Icon name="calendar" /><div><strong>Fecha y hora</strong><span>{selectedEvent.date}</span></div></div>
             <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{[selectedEvent.venue, selectedEvent.city].filter(Boolean).join(', ')}</span></div></div>
             <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span>{selectedEvent.capacity !== undefined && <span className="ticket-availability">{selectedEventRemaining.toLocaleString('es-MX')} disponibles</span>}<div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto" disabled={quantity <= 1}><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(maxPurchaseQuantity, value + 1))} aria-label="Agregar un boleto" disabled={quantity >= maxPurchaseQuantity}><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
+            <button className="primary-button modal-buy-button" onClick={confirmPurchase} disabled={quantity < 1 || selectedEventRemaining < 1}>
+              {selectedEventRemaining < 1 ? 'Agotados' : 'Comprar boletos'} <Icon name="arrow" size={17} />
+            </button>
+            <p className="secure-note"><Icon name="lock" size={13} /> Compra de demostración · No se realiza ningún cobro</p>
           </div>
         </section>
       </div>}
