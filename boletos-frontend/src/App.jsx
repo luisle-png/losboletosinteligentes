@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './App.css'
 
 const events = [
   {
-    id: 1,
-    title: 'Horizonte Festival',
-    artist: 'Una noche para perder la noción del tiempo',
-    category: 'Música',
-    date: 'Sáb, 24 AGO · 18:00',
-    venue: 'Parque Fundidora',
-    city: 'Monterrey, NL',
-    price: 890,
-    image: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=1500&q=85',
-    badge: 'ÚLTIMOS BOLETOS',
-    accent: 'coral',
+    id: 9,
+    title: 'Camp Nou · Tour (demo)',
+    artist: 'Listado de demostración, no oficial. Fecha y precio por confirmar.',
+    category: 'Experiencias',
+    date: 'Fecha por confirmar',
+    venue: 'Spotify Camp Nou',
+    city: 'Barcelona, España',
+    price: 2500,
+    image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1500&q=85',
+    badge: 'DEMO · NO OFICIAL',
+    accent: 'blue',
   },
   {
     id: 2,
@@ -163,6 +163,75 @@ const events = [
 
 const categories = ['Todo', 'Música', 'Comedia', 'Experiencias', 'Cultura', 'Viajes']
 const formatPrice = (price) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(price)
+const danceSparkles = [
+  { symbol: '✦', x: '7%', y: '24%', delay: '0s' }, { symbol: '♡', x: '17%', y: '66%', delay: '.8s' },
+  { symbol: '✧', x: '26%', y: '18%', delay: '.4s' }, { symbol: '✦', x: '37%', y: '78%', delay: '1.2s' },
+  { symbol: '♡', x: '48%', y: '14%', delay: '.2s' }, { symbol: '✧', x: '59%', y: '72%', delay: '1s' },
+  { symbol: '✦', x: '69%', y: '22%', delay: '.6s' }, { symbol: '♡', x: '79%', y: '68%', delay: '1.4s' },
+  { symbol: '✧', x: '91%', y: '18%', delay: '.3s' }, { symbol: '✦', x: '95%', y: '77%', delay: '1.1s' },
+]
+
+function DancingMonkey({ variant, name, decorative = false }) {
+  const [dragPosition, setDragPosition] = useState(null)
+  const dragOffset = useRef(null)
+
+  function handlePointerDown(event) {
+    if (event.button !== 0) return
+    event.preventDefault()
+    event.stopPropagation()
+    const bounds = event.currentTarget.getBoundingClientRect()
+    dragOffset.current = { x: event.clientX - bounds.left, y: event.clientY - bounds.top }
+    setDragPosition({ left: bounds.left, top: bounds.top, placed: false })
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function handlePointerMove(event) {
+    if (!dragOffset.current) return
+    const bounds = event.currentTarget.getBoundingClientRect()
+    setDragPosition({
+      left: Math.max(0, Math.min(window.innerWidth - bounds.width, event.clientX - dragOffset.current.x)),
+      top: Math.max(0, Math.min(window.innerHeight - bounds.height, event.clientY - dragOffset.current.y)),
+      placed: false,
+    })
+  }
+
+  function handlePointerUp(event) {
+    if (dragOffset.current) {
+      const bounds = event.currentTarget.getBoundingClientRect()
+      const parentBounds = event.currentTarget.parentElement.getBoundingClientRect()
+      setDragPosition({ left: bounds.left - parentBounds.left, top: bounds.top - parentBounds.top, placed: true })
+    }
+    dragOffset.current = null
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
+  return (
+    <div
+      className={`dancing-monkey ${variant}${dragPosition?.placed ? ' user-placed' : dragPosition ? ' user-dragged' : ''}`}
+      style={dragPosition ? { left: dragPosition.left, top: dragPosition.top } : undefined}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onClick={(event) => { event.preventDefault(); event.stopPropagation() }}
+      role="img"
+      aria-label={name}
+      aria-hidden={decorative ? 'true' : undefined}
+    >
+      <span className="monkey-tail" />
+      <span className="monkey-arm monkey-arm-left" />
+      <span className="monkey-arm monkey-arm-right" />
+      <span className="monkey-body"><i className="monkey-belly" /></span>
+      <span className="monkey-leg monkey-leg-left" />
+      <span className="monkey-leg monkey-leg-right" />
+      <span className="monkey-head">
+        <i className="monkey-ear monkey-ear-left" /><i className="monkey-ear monkey-ear-right" />
+        <i className="monkey-face"><i className="monkey-eye monkey-eye-left" /><i className="monkey-eye monkey-eye-right" /><i className="monkey-muzzle"><i className="monkey-nose" /><i className="monkey-smile" /></i><i className="monkey-blush monkey-blush-left" /><i className="monkey-blush monkey-blush-right" /></i>
+        <i className="monkey-tuft" />
+      </span>
+    </div>
+  )
+}
 
 function readStorage(key, fallback) {
   try {
@@ -292,10 +361,6 @@ function App() {
   }
 
   function confirmPurchase() {
-    if (!selectedEvent || quantity < 1 || quantity > getEventRemaining(selectedEvent)) {
-      setNotice('No hay suficientes boletos disponibles para completar la compra.')
-      return
-    }
     if (!currentUser) {
       setPendingPurchase(true)
       setAuthMode('login')
@@ -337,12 +402,28 @@ function App() {
             <div className="hero-photo" />
             <div className="hero-sticker"><span>VAMOS</span><strong>Tu próxima<br />aventura.</strong><i>↗</i></div>
             <div className="hero-caption"><span className="caption-line" /> Momentos que se quedan contigo</div>
+            <DancingMonkey variant="monkey-peach page-monkey hero-monkey" name="Monito bailando" decorative />
             <div className="hero-spark" aria-hidden="true">✦</div>
           </div>
-          <div className="hero-index"><span>01</span> / 12</div>
+          <div className="hero-index"><span>01</span> / 07</div>
+        </section>
+
+        <section className="dance-section" aria-label="Monitos bailando entre corazones y estrellas">
+          {danceSparkles.map((sparkle) => <span className="dance-sparkle" key={`${sparkle.symbol}-${sparkle.x}`} style={{ '--spark-x': sparkle.x, '--spark-y': sparkle.y, '--spark-delay': sparkle.delay }} aria-hidden="true">{sparkle.symbol}</span>)}
+          <div className="dance-message"><span>UN POQUITO DE MAGIA</span><h2>¡Que empiece <em>la fiesta!</em></h2></div>
+          <div className="monkey-stage" aria-label="Tres monitos bailan felices">
+            <DancingMonkey variant="monkey-peach" name="Monito durazno bailando" />
+            <DancingMonkey variant="monkey-cocoa" name="Monito cafecito bailando" />
+            <DancingMonkey variant="monkey-berry" name="Monito rosita bailando" />
+          </div>
+          <span className="dance-note" aria-hidden="true">♪ ♫ ♪</span>
         </section>
 
         <section className="event-section" id="eventos">
+          <DancingMonkey variant="monkey-berry page-monkey events-monkey-left" name="Monito rosita bailando" decorative />
+          <DancingMonkey variant="monkey-cocoa page-monkey events-monkey-right" name="Monito cafecito bailando" decorative />
+          <span className="page-heart events-heart" aria-hidden="true">♡</span>
+          <span className="page-heart events-star" aria-hidden="true">✧</span>
           <div className="section-heading">
             <div><div className="eyebrow section-eyebrow">LA CIUDAD TIENE PLANES</div><h2>Algo bueno <em>está pasando.</em></h2></div>
             <a className="text-link" href="#eventos">Ver toda la agenda <Icon name="arrow" size={16} /></a>
@@ -355,31 +436,29 @@ function App() {
           </div>
 
           <div className="event-grid">
-            {visibleEvents.map((event) => {
-              const eventRemaining = getEventRemaining(event)
-              return <article className="event-card" key={event.id}>
-                <button className="event-image-button" onClick={() => openEvent(event)} aria-label={`Ver detalles de ${event.title}`}>
-                  <img src={event.image} alt={event.title} loading="lazy" />
-                  <span className={`event-badge ${event.accent}`}>{event.badge}</span>
-                  <span className="image-arrow"><Icon name="arrow" size={18} /></span>
-                </button>
-                <div className="event-card-body">
-                  <div className="event-meta"><span>{event.category}</span><span>{event.date.split(' · ')[0]}</span></div>
-                  <button className="event-title-button" onClick={() => openEvent(event)}><h3>{event.title}</h3></button>
-                  <p className="event-artist">{event.artist}</p>
-                  <div className="event-card-footer"><span className="venue-line"><Icon name="pin" size={15} />{event.venue}</span><span className="event-price">Desde <strong>{formatPrice(event.price)}</strong></span></div>
-                  <button className="event-buy-button" onClick={() => openEvent(event)} disabled={eventRemaining === 0}>
-                    {eventRemaining === 0 ? 'Agotado' : 'Comprar boletos'} {eventRemaining > 0 && <Icon name="arrow" size={15} />}
-                  </button>
-                </div>
-              </article>
-            })}
+            {visibleEvents.map((event) => <article className="event-card" key={event.id}>
+              <button className="event-image-button" onClick={() => openEvent(event)} aria-label={`Ver detalles de ${event.title}`}>
+                <img src={event.image} alt={event.title} loading="lazy" />
+                <span className={`event-badge ${event.accent}`}>{event.badge}</span>
+                <span className="image-arrow"><Icon name="arrow" size={18} /></span>
+              </button>
+              <div className="event-card-body">
+                <div className="event-meta"><span>{event.category}</span><span>{event.date.split(' · ')[0]}</span></div>
+                <button className="event-title-button" onClick={() => openEvent(event)}><h3>{event.title}</h3></button>
+                <p className="event-artist">{event.artist}</p>
+                <div className="event-card-footer"><span className="venue-line"><Icon name="pin" size={15} />{event.venue}</span><span className="event-price">Desde <strong>{formatPrice(event.price)}</strong></span></div>
+              </div>
+            </article>)}
           </div>
           {visibleEvents.length === 0 && <div className="empty-results">No encontramos eventos con esa búsqueda. Prueba con otra palabra.</div>}
           <div className="all-events"><button className="outline-button" onClick={() => { setCategory('Todo'); setSearch('') }}>Explorar todos los eventos <Icon name="arrow" size={16} /></button></div>
         </section>
 
         <section className="how-section" id="como-funciona">
+          <DancingMonkey variant="monkey-peach page-monkey how-monkey-left" name="Monito durazno bailando" decorative />
+          <DancingMonkey variant="monkey-berry page-monkey how-monkey-right" name="Monito rosita bailando" decorative />
+          <span className="page-heart how-heart" aria-hidden="true">♡</span>
+          <span className="page-heart how-star" aria-hidden="true">✦</span>
           <div className="how-intro"><div className="eyebrow section-eyebrow">ASÍ DE FÁCIL</div><h2>Del “deberíamos”<br />al <em>“qué buena noche”.</em></h2></div>
           <div className="how-steps"><div className="step"><span className="step-number">01</span><div><h3>Encuentra el plan</h3><p>Explora eventos y descubre los detalles antes de elegir.</p></div></div><div className="step"><span className="step-number">02</span><div><h3>Elige tus boletos</h3><p>Selecciona la cantidad que necesitas y confirma tu compra.</p></div></div><div className="step"><span className="step-number">03</span><div><h3>Vívelo en grande</h3><p>Tu comprobante queda guardado para que lo tengas a la mano.</p></div></div></div>
         </section>
@@ -395,10 +474,6 @@ function App() {
             <div className="detail-row"><Icon name="calendar" /><div><strong>Fecha y hora</strong><span>{selectedEvent.date}</span></div></div>
             <div className="detail-row"><Icon name="pin" /><div><strong>Lugar</strong><span>{[selectedEvent.venue, selectedEvent.city].filter(Boolean).join(', ')}</span></div></div>
             <div className="purchase-row"><div><span className="field-label">BOLETOS · {formatPrice(selectedEvent.price)} C/U</span>{selectedEvent.capacity !== undefined && <span className="ticket-availability">{selectedEventRemaining.toLocaleString('es-MX')} disponibles</span>}<div className="quantity-control"><button onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Quitar un boleto" disabled={quantity <= 1}><Icon name="minus" size={16} /></button><span>{quantity}</span><button onClick={() => setQuantity((value) => Math.min(maxPurchaseQuantity, value + 1))} aria-label="Agregar un boleto" disabled={quantity >= maxPurchaseQuantity}><Icon name="plus" size={16} /></button></div></div><div className="purchase-total"><span>Total</span><strong>{formatPrice(selectedEvent.price * quantity)}</strong></div></div>
-            <button className="primary-button modal-buy-button" onClick={confirmPurchase} disabled={quantity < 1 || selectedEventRemaining === 0}>
-              {selectedEventRemaining === 0 ? 'Agotado' : 'Confirmar compra'} <Icon name="arrow" size={16} />
-            </button>
-            <p className="secure-note"><Icon name="lock" size={13} /> Compra de demostración, sin cobro real.</p>
           </div>
         </section>
       </div>}
