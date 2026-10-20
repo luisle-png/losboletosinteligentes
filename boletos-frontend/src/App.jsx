@@ -3,19 +3,6 @@ import './App.css'
 
 const events = [
   {
-    id: 9,
-    title: 'Camp Nou · Tour (demo)',
-    artist: 'Listado de demostración, no oficial. Fecha y precio por confirmar.',
-    category: 'Experiencias',
-    date: 'Fecha por confirmar',
-    venue: 'Spotify Camp Nou',
-    city: 'Barcelona, España',
-    price: 2500,
-    image: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=1500&q=85',
-    badge: 'DEMO · NO OFICIAL',
-    accent: 'blue',
-  },
-  {
     id: 2,
     title: 'Noche de Comedia',
     artist: 'Risas sin guion con talentos de casa',
@@ -305,7 +292,7 @@ function App() {
   function getEventRemaining(event) {
     if (event.capacity === undefined) return Infinity
     return Math.max(0, event.capacity - receipts.reduce((total, receipt) => (
-      receipt.eventId === event.id ? total + receipt.quantity : total
+      receipt.eventId === event.id && receipt.title === event.title ? total + receipt.quantity : total
     ), 0))
   }
 
