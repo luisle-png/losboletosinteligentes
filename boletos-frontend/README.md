@@ -1,16 +1,41 @@
-# React + Vite
+# Susu Viaja Conmigo
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación de demostración para descubrir eventos y simular la compra de boletos. Está construida con React y Vite.
 
-Currently, two official plugins are available:
+## Ejecutar localmente
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Desde esta carpeta:
 
-## React Compiler
+```sh
+npm install
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Para validar o previsualizar una compilación:
 
-## Expanding the Oxlint configuration
+```sh
+npm run lint
+npm run build
+npm run preview
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Publicar en GitHub Pages
+
+El workflow `../.github/workflows/deploy-pages.yml` compila y publica el sitio automáticamente al hacer push a `main` o al ejecutarlo manualmente desde la pestaña **Actions** de GitHub.
+
+En el repositorio, configura **Settings → Pages → Build and deployment → Source → GitHub Actions**. Después del primer despliegue, la aplicación estará en:
+
+<https://luisle-png.github.io/losboletosinteligentes/>
+
+La ruta base de Vite se ajusta automáticamente para GitHub Actions; en desarrollo local la app sigue usando `/`.
+
+## Probar la compra
+
+1. Busca eventos o filtra por categoría.
+2. Abre un evento, selecciona la cantidad y continúa.
+3. Crea un perfil de demostración con nombre y correo.
+4. Consulta el comprobante desde el perfil.
+
+Los perfiles, la sesión y los comprobantes se guardan en el almacenamiento local del navegador. No se solicitan contraseñas ni datos de pago. Los perfiles no son autenticación real y no deben usarse para proteger información.
+
+**Todas las compras son simuladas:** no se realiza ningún cobro, no se reserva inventario compartido y los comprobantes no son válidos para entrar a eventos. Los eventos, fechas y precios son datos de ejemplo. Para vender boletos reales se necesita un backend con autenticación, inventario y un proveedor de pagos.

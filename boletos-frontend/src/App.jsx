@@ -7,7 +7,7 @@ const events = [
     title: 'Noche de Comedia',
     artist: 'Risas sin guion con talentos de casa',
     category: 'Comedia',
-    date: 'Vie, 30 AGO · 20:30',
+    date: 'Vie, 30 OCT 2026 · 20:30',
     venue: 'Foro Tims',
     city: 'Monterrey, NL',
     price: 420,
@@ -20,7 +20,7 @@ const events = [
     title: 'Sabor a México',
     artist: 'Cocina, música y tradición en un solo lugar',
     category: 'Experiencias',
-    date: 'Dom, 08 SEP · 13:00',
+    date: 'Dom, 08 NOV 2026 · 13:00',
     venue: 'Casa Morelos',
     city: 'Monterrey, NL',
     price: 350,
@@ -33,7 +33,7 @@ const events = [
     title: 'Luz de Cámara',
     artist: 'Las grandes bandas sonoras, en vivo',
     category: 'Cultura',
-    date: 'Sáb, 14 SEP · 19:00',
+    date: 'Sáb, 14 NOV 2026 · 19:00',
     venue: 'Auditorio San Pedro',
     city: 'San Pedro, NL',
     price: 680,
@@ -46,7 +46,7 @@ const events = [
     title: 'Ruta a Alaska',
     artist: 'Auroras, paisajes extremos y una experiencia que cambia la mirada',
     category: 'Viajes',
-    date: 'Vie, 20 SEP · 06:30',
+    date: 'Vie, 20 NOV 2026 · 06:30',
     venue: 'Aeropuerto Internacional',
     city: 'Anchorage, Alaska',
     price: 12490,
@@ -59,7 +59,7 @@ const events = [
     title: 'Tokio Lights',
     artist: 'Miyu Sato · estilo, cultura y energía de Japón en una sola experiencia',
     category: 'Viajes',
-    date: 'Mar, 24 SEP · 09:00',
+    date: 'Mar, 24 NOV 2026 · 09:00',
     venue: 'Shibuya District',
     city: 'Tokio, Japón',
     price: 15850,
@@ -72,7 +72,7 @@ const events = [
     title: 'Nueva York Skyline',
     artist: 'Ariana Brooks · la energía más grande de Estados Unidos',
     category: 'Viajes',
-    date: 'Vie, 27 SEP · 08:15',
+    date: 'Vie, 27 NOV 2026 · 08:15',
     venue: 'Times Square',
     city: 'Nueva York, EE. UU.',
     price: 13200,
@@ -85,7 +85,7 @@ const events = [
     title: 'Shanghai Nights',
     artist: 'Lin Wei · innovación, arte y modernidad de China',
     category: 'Viajes',
-    date: 'Sáb, 05 OCT · 19:30',
+    date: 'Sáb, 05 DIC 2026 · 19:30',
     venue: 'Bund Waterfront',
     city: 'Shanghái, China',
     price: 14600,
@@ -98,7 +98,7 @@ const events = [
     title: 'Tour de Tombo',
     artist: 'Tombo en vivo en Ciudad de México',
     category: 'Experiencias',
-    date: 'Vie, 16 OCT · 21:00',
+    date: 'Mié, 16 DIC 2026 · 21:00',
     venue: 'Estadio',
     city: 'CDMX',
     price: 1000,
@@ -261,7 +261,14 @@ function Icon({ name, size = 18 }) {
 }
 
 function App() {
-  const [users, setUsers] = useState(() => readStorage('aforo-users', []))
+  const [users, setUsers] = useState(() => {
+    const storedUsers = readStorage('aforo-users', [])
+    return Array.isArray(storedUsers)
+      ? storedUsers
+        .filter((user) => user && typeof user.name === 'string' && typeof user.email === 'string')
+        .map(({ name, email }) => ({ name, email }))
+      : []
+  })
   const [session, setSession] = useState(() => readStorage('aforo-session', null))
   const [receipts, setReceipts] = useState(() => readStorage('aforo-purchases', []))
   const [category, setCategory] = useState('Todo')
@@ -319,15 +326,18 @@ function App() {
     setAuthError('')
     const formData = new FormData(event.currentTarget)
     const name = String(formData.get('name') || '').trim()
-    const email = String(formData.get('email')).trim().toLowerCase()
-    const password = String(formData.get('password'))
+    const email = String(formData.get('email') || '').trim().toLowerCase()
 
     if (authMode === 'register') {
-      if (users.some((user) => user.email === email)) {
-        setAuthError('Ya existe una cuenta con este correo.')
+      if (!name) {
+        setAuthError('Escribe tu nombre para crear el perfil.')
         return
       }
-      const newUser = { name, email, password }
+      if (users.some((user) => user.email === email)) {
+        setAuthError('Ya existe un perfil con este correo. Entra a ese perfil.')
+        return
+      }
+      const newUser = { name, email }
       setUsers((current) => [...current, newUser])
       setSession({ email })
       setAuthOpen(false)
@@ -336,9 +346,9 @@ function App() {
       return
     }
 
-    const user = users.find((item) => item.email === email && item.password === password)
+    const user = users.find((item) => item.email === email)
     if (!user) {
-      setAuthError('Correo o contraseña incorrectos.')
+      setAuthError('No encontramos ese perfil en este navegador. Crea uno para continuar.')
       return
     }
     setSession({ email })
@@ -354,7 +364,7 @@ function App() {
     }
     if (!currentUser) {
       setPendingPurchase(true)
-      setAuthMode('login')
+      setAuthMode(users.length ? 'login' : 'register')
       setAuthOpen(true)
       return
     }
@@ -374,7 +384,7 @@ function App() {
         <a className="brand" href="#inicio" aria-label="Susu viaja conmigo, inicio"><span className="brand-mark" aria-hidden="true">✦</span><span className="brand-name"><strong>SUSU</strong><small>VIAJA CONMIGO</small></span></a>
         <nav className="main-nav" aria-label="Navegación principal"><a href="#eventos" className="nav-active">Descubrir</a><a href="#eventos">Categorías</a><a href="#como-funciona">Cómo funciona</a></nav>
         <div className="header-actions">
-          {currentUser ? <button className="account-button" onClick={() => setAccountOpen(true)}><span className="avatar">{currentUser.name.charAt(0).toUpperCase()}</span><span className="account-name">{currentUser.name.split(' ')[0]}</span></button> : <button className="login-button" onClick={() => { setAuthMode('login'); setAuthOpen(true) }}>Iniciar sesión</button>}
+          {currentUser ? <button className="account-button" onClick={() => setAccountOpen(true)}><span className="avatar">{currentUser.name.charAt(0).toUpperCase()}</span><span className="account-name">{currentUser.name.split(' ')[0]}</span></button> : <button className="login-button" onClick={() => { setAuthMode(users.length ? 'login' : 'register'); setAuthOpen(true) }}>Entrar a mi perfil</button>}
           <a className="header-cta" href="#eventos">Ver eventos <Icon name="arrow" size={16} /></a>
         </div>
       </header>
@@ -483,23 +493,23 @@ function App() {
         <section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
           <button className="modal-close" onClick={() => setAuthOpen(false)} aria-label="Cerrar"><Icon name="close" /></button>
           <div className="auth-mark">✦ <span>SUSU</span></div><div className="eyebrow section-eyebrow">TU PRÓXIMA HISTORIA</div><h2 id="auth-title">{authMode === 'login' ? 'Qué bueno verte.' : 'Hazte un lugar.'}</h2><p className="auth-subtitle">{authMode === 'login' ? 'Entra a tu cuenta para continuar.' : 'Crea tu cuenta y empieza a hacer planes.'}</p>
+          <p className="auth-subtitle demo-disclaimer">Perfil de demostración, guardado solo en este navegador. No uses datos sensibles; no hay contraseñas ni autenticación real.</p>
           <form className="auth-form" onSubmit={handleAuthSubmit}>
             {authMode === 'register' && <label>Nombre completo<input name="name" type="text" placeholder="Tu nombre" autoComplete="name" required /></label>}
             <label>Correo electrónico<input name="email" type="email" placeholder="tu@correo.com" autoComplete="email" required /></label>
-            <label>Contraseña<input name="password" type="password" placeholder="Mínimo 6 caracteres" autoComplete={authMode === 'login' ? 'current-password' : 'new-password'} minLength="6" required /></label>
             {authError && <p className="form-error" role="alert">{authError}</p>}
-            <button className="primary-button auth-submit" type="submit">{authMode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'} <Icon name="arrow" size={17} /></button>
+            <button className="primary-button auth-submit" type="submit">{authMode === 'login' ? 'Entrar al perfil' : 'Crear perfil de demo'} <Icon name="arrow" size={17} /></button>
           </form>
-          <p className="auth-switch">{authMode === 'login' ? '¿Aún no tienes cuenta?' : '¿Ya tienes cuenta?'} <button onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setAuthError('') }}>{authMode === 'login' ? 'Regístrate' : 'Inicia sesión'}</button></p>
+          <p className="auth-switch">{authMode === 'login' ? '¿Primera vez en este navegador?' : '¿Ya tienes un perfil aquí?'} <button onClick={() => { setAuthMode(authMode === 'login' ? 'register' : 'login'); setAuthError('') }}>{authMode === 'login' ? 'Crea un perfil' : 'Entra a tu perfil'}</button></p>
         </section>
       </div>}
 
       {accountOpen && currentUser && <div className="modal-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setAccountOpen(false) }}>
-        <section className="account-modal" role="dialog" aria-modal="true" aria-labelledby="account-title"><button className="modal-close" onClick={() => setAccountOpen(false)} aria-label="Cerrar"><Icon name="close" /></button><div className="account-avatar-large">{currentUser.name.charAt(0).toUpperCase()}</div><div className="eyebrow section-eyebrow">TU CUENTA</div><h2 id="account-title">Hola, {currentUser.name.split(' ')[0]}.</h2><p className="account-email">{currentUser.email}</p><div className="receipt-list-title"><Icon name="ticket" size={17} /> Tus comprobantes <span>{receipts.filter((item) => item.email === currentUser.email).length}</span></div>{receipts.filter((item) => item.email === currentUser.email).length ? receipts.filter((item) => item.email === currentUser.email).map((item) => <button className="saved-receipt" key={item.id} onClick={() => { setAccountOpen(false); setReceiptOpen(item) }}><span><strong>{item.title}</strong><small>{item.quantity} boleto{item.quantity > 1 ? 's' : ''} · {item.createdAt}</small></span><Icon name="arrow" size={16} /></button>) : <p className="no-receipts">Todavía no tienes compras. Tu próximo plan te espera.</p>}<button className="signout-button" onClick={signOut}>Cerrar sesión</button></section>
+        <section className="account-modal" role="dialog" aria-modal="true" aria-labelledby="account-title"><button className="modal-close" onClick={() => setAccountOpen(false)} aria-label="Cerrar"><Icon name="close" /></button><div className="account-avatar-large">{currentUser.name.charAt(0).toUpperCase()}</div><div className="eyebrow section-eyebrow">PERFIL DE DEMOSTRACIÓN</div><h2 id="account-title">Hola, {currentUser.name.split(' ')[0]}.</h2><p className="account-email">{currentUser.email}</p><p className="auth-subtitle demo-disclaimer">Este perfil y sus comprobantes se guardan en este navegador. Las compras son simuladas.</p><div className="receipt-list-title"><Icon name="ticket" size={17} /> Tus comprobantes <span>{receipts.filter((item) => item.email === currentUser.email).length}</span></div>{receipts.filter((item) => item.email === currentUser.email).length ? receipts.filter((item) => item.email === currentUser.email).map((item) => <button className="saved-receipt" key={item.id} onClick={() => { setAccountOpen(false); setReceiptOpen(item) }}><span><strong>{item.title}</strong><small>{item.quantity} boleto{item.quantity > 1 ? 's' : ''} · {item.createdAt}</small></span><Icon name="arrow" size={16} /></button>) : <p className="no-receipts">Todavía no tienes compras. Tu próximo plan te espera.</p>}<button className="signout-button" onClick={signOut}>Salir del perfil de demo</button></section>
       </div>}
 
       {receiptOpen && <div className="modal-backdrop receipt-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setReceiptOpen(null) }}>
-        <section className="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><button className="modal-close" onClick={() => setReceiptOpen(null)} aria-label="Cerrar"><Icon name="close" /></button><div className="receipt-check"><Icon name="check" size={26} /></div><div className="eyebrow section-eyebrow">COMPRA CONFIRMADA</div><h2 id="receipt-title">Ya tienes plan.</h2><p className="receipt-thanks">Tu compra quedó guardada en este dispositivo.</p><div className="receipt-ticket"><div className="receipt-ticket-top"><span>SUSU <span className="receipt-logo-dot">✦</span></span><span>COMPROBANTE</span></div><h3>{receiptOpen.title}</h3><p>{receiptOpen.date}</p><p>{receiptOpen.venue}</p><div className="receipt-divider" /><div className="receipt-data"><span>Folio<strong>{receiptOpen.id}</strong></span><span>Boletos<strong>{receiptOpen.quantity}</strong></span><span>Comprador<strong>{receiptOpen.buyer}</strong></span></div><div className="receipt-total"><span>Total pagado</span><strong>{formatPrice(receiptOpen.total)}</strong></div><p className="receipt-date">{receiptOpen.createdAt}</p></div><button className="primary-button receipt-done" onClick={() => setReceiptOpen(null)}>Listo, gracias <Icon name="check" size={17} /></button></section>
+        <section className="receipt-modal" role="dialog" aria-modal="true" aria-labelledby="receipt-title"><button className="modal-close" onClick={() => setReceiptOpen(null)} aria-label="Cerrar"><Icon name="close" /></button><div className="receipt-check"><Icon name="check" size={26} /></div><div className="eyebrow section-eyebrow">PEDIDO DE DEMOSTRACIÓN</div><h2 id="receipt-title">Ya tienes plan.</h2><p className="receipt-thanks">Comprobante de prueba guardado en este navegador. No se realizó ningún cobro y no es válido para entrar al evento.</p><div className="receipt-ticket"><div className="receipt-ticket-top"><span>SUSU <span className="receipt-logo-dot">✦</span></span><span>COMPROBANTE DEMO</span></div><h3>{receiptOpen.title}</h3><p>{receiptOpen.date}</p><p>{receiptOpen.venue}</p><div className="receipt-divider" /><div className="receipt-data"><span>Folio<strong>{receiptOpen.id}</strong></span><span>Boletos<strong>{receiptOpen.quantity}</strong></span><span>Comprador<strong>{receiptOpen.buyer}</strong></span></div><div className="receipt-total"><span>Total de demostración</span><strong>{formatPrice(receiptOpen.total)}</strong></div><p className="receipt-date">{receiptOpen.createdAt}</p></div><button className="primary-button receipt-done" onClick={() => setReceiptOpen(null)}>Listo, gracias <Icon name="check" size={17} /></button></section>
       </div>}
 
       {notice && <div className="toast" role="status"><Icon name="check" size={16} />{notice}<button onClick={() => setNotice('')} aria-label="Cerrar aviso"><Icon name="close" size={15} /></button></div>}
